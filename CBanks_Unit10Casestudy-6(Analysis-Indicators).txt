@@ -1,0 +1,340 @@
+## title: "Week 10 Case Study" - continuation
+## author: "C. Banks"
+## date: "July 19, 2016"
+## output: html_document
+
+# VII-Analysis of Indicators.                                                      
+## - Correlate each indicator with AsIs series.
+## - Test correlations against exports.                                                                        
+
+
+## VII-A Convert Indicators to Time Series.
+TotExUrbIndts  TotExUrbIndts <- ts(TotExUrbInd, start=c(2008,1), end=c(2013,12), frequency=12)
+TotExUrbInd2014ts <- ts(TotExUrbInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+ExpPriceChgIndts <- ts(ExpPriceChgInd, start=c(2008,1), end=c(2013,12), frequency=12)
+GovSatIndts <- ts(GovSatInd, start=c(2008,1), end=c(2013,12), frequency=12)
+AvgTempIndts <- ts(AvgTempInd, start=c(2008,1), end=c(2013,12), frequency=12)
+BirthsIndts <- ts(BirthsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+SatIndIndepts <- ts(SatIndIndep, start=c(2008,1), end=c(2013,12), frequency=12)
+GlobPartyMbrsIndts <- ts(GlobPartyMbrsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+GlobPartyMbrsInd2014ts <- ts(GlobPartyMbrsInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+AvgExpPriceIndts <- ts(AvgExpPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+EtelProdPriceIndts <- ts(EtelProdPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarIndxts <- ts(ChulwalarIndx, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarIndx2014ts <- ts(ChulwalarIndx2014, start=c(2014,1), end=c(2014,12), frequency=12)
+InflationIndts <- ts(InflationInd, start=c(2008,1), end=c(2013,12), frequency=12)
+InflationInd2014ts <- ts(InflationInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+ChulwalarSpendDaysIndts <- ts(ChulwalarSpendDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarSpendDaysInd2014ts <- ts(ChulwalarSpendDaysInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+ChulwalarDaysIndts <- ts(ChulwalarDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarDaysInd2014ts <- ts(ChulwalarDaysInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+InflChulwalarDaysIndts <- ts(InflChulwalarDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+InflChulwalarDaysInd2014ts <- ts(InflChulwalarDaysInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+
+## VII-B Correlate external indicators to As Is Series.
+
+## 1.  Monthly Change in Export Price Index (CEPI)
+CEPIInd <- c(DataIndicators [1:12,2],DataIndicators [1:12,3],DataIndicators [1:12,4],DataIndicators [1:12,5],DataIndicators [1:12,6],DataIndicators [1:12,7])
+CEPIIndts <- ts(CEPIInd , start=c(2008,1), end=c(2013,12), frequency=12)
+plot(CEPIIndts, main="CEPI")
+##  
+## Correlation of CEPI to As Is Exports...
+cor(TotalAsIsts, CEPIIndts)
+cor(EfakAsIsts , CEPIIndts)
+cor(WugeAsIsts, CEPIIndts)
+cor(TotalEtelAsIsts, CEPIIndts)
+cor(BlueEtelAsIsts , CEPIIndts)
+cor(RedEtelAsIsts , CEPIIndts)
+
+
+## The CEPI correlates very well with the efak exports.
+##  
+## 2.  Monthly Change in Gov't Satisfaction Index 
+GovSatInd <- c(DataIndicators [15:26,2],DataIndicators [15:26,3],DataIndicators [15:26,4],DataIndicators [15:26,5],DataIndicators [15:26,6],DataIndicators [15:26,7])
+GovSatIndts <- ts(GovSatInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(GovSatIndts, main="Gov't. Satisfaction Index")
+##  
+## Correlation of Gov't Satisfaction Index to As Is Exports...
+cor(TotalAsIsts, GovSatIndts)
+cor(EfakAsIsts , GovSatIndts)
+cor(WugeAsIsts, GovSatIndts)
+cor(TotalEtelAsIsts, GovSatIndts)
+cor(BlueEtelAsIsts , GovSatIndts)
+cor(RedEtelAsIsts , GovSatIndts)
+
+
+## The Gov't Satisfaction Index correlates ...
+##
+## 3.  Monthly Change in Average Temperature Index
+AvgTempInd <- c(DataIndicators [29:40,2],DataIndicators [29:40,3],DataIndicators [29:40,4],DataIndicators [29:40,5],DataIndicators [29:40,6],DataIndicators [29:40,7])
+AvgTempIndts <- ts(AvgTempInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(AvgTempIndts, main="Avg Temperature Index")
+##  
+## Correlation of Average Temperature Index correlates ... 
+cor(TotalAsIsts, AvgTempIndts)
+cor(EfakAsIsts , AvgTempIndts)
+cor(WugeAsIsts, AvgTempIndts)
+cor(TotalEtelAsIsts, AvgTempIndts)
+cor(BlueEtelAsIsts , AvgTempIndts)
+cor(RedEtelAsIsts , AvgTempIndts)
+
+
+## The Average Temperature Index correlates ...
+##
+## 4. Monthly Change in Births Index
+BirthsInd <- c(DataIndicators [43:54,2],DataIndicators [43:54,3],DataIndicators [43:54,4],DataIndicators [43:54,5],DataIndicators [43:54,6],DataIndicators [43:54,7])
+BirthsIndts <- ts(BirthsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(BirthsIndts, main="Births Index")
+##  
+## Correlation of Births Index  ... 
+cor(TotalAsIsts, BirthsIndts)
+cor(EfakAsIsts , BirthsIndts)
+cor(WugeAsIsts, BirthsIndts)
+cor(TotalEtelAsIsts, BirthsIndts)
+cor(BlueEtelAsIsts , BirthsIndts)
+cor(RedEtelAsIsts , BirthsIndts)
+
+ 
+## The Births Index correlates ...
+##
+## 5. Monthly Change in Independent Satisfaction Index
+SatIndIndep <-c(DataIndicators [57:68,2],DataIndicators [57:68,3],DataIndicators [57:68,4],DataIndicators [57:68,5],DataIndicators [57:68,6],DataIndicators [57:68,7])
+SatIndIndepts <- ts(SatIndIndep, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(SatIndIndepts, main="Indep. Satisfaction Index")
+##  
+## Correlation of Independent Satisfaction Index ... 
+cor(TotalAsIsts, SatIndIndepts)
+cor(EfakAsIsts , SatIndIndepts)
+cor(WugeAsIsts, SatIndIndepts)
+cor(TotalEtelAsIsts, SatIndIndepts)
+cor(BlueEtelAsIsts , SatIndIndepts)
+cor(RedEtelAsIsts , SatIndIndepts)
+
+ 
+## The Independent Satisfaction Index correlates ...
+##
+## 6. Monthly Change in Total Urbano Exports Index
+TotExUrbInd <-c(DataIndicators [71:82,2],DataIndicators [71:82,3],DataIndicators [71:82,4],DataIndicators [71:82,5],DataIndicators [71:82,6],DataIndicators [71:82,7])
+TotExUrbIndts <- ts(TotExUrbInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(TotExUrbIndts, main="Total Urbano Exports Index")
+##  
+## Correlation of Total Urbano Exports Index  ... 
+cor(TotalAsIsts, TotExUrbIndts)
+cor(EfakAsIsts , TotExUrbIndts)
+cor(WugeAsIsts, TotExUrbIndts)
+cor(TotalEtelAsIsts, TotExUrbIndts)
+cor(BlueEtelAsIsts , TotExUrbIndts)
+cor(RedEtelAsIsts , TotExUrbIndts)
+
+ 
+## The Average Total Urbano Exports Index correlates ...
+##
+## 7. Monthly Change in # of Global Party Members Index
+GlobPartyMbrsInd <- c(DataIndicators [85:96,2],DataIndicators [85:96,3],DataIndicators [85:96,4],DataIndicators [85:96,5],DataIndicators [85:96,6],DataIndicators [85:96,7])
+GlobPartyMbrsIndts <- ts(GlobPartyMbrsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(GlobPartyMbrsIndts, main="# of Global Party Members Index")
+##  
+## Correlation of Global Party Members Index correlates ... 
+cor(TotalAsIsts, GlobPartyMbrsIndts)
+cor(EfakAsIsts , GlobPartyMbrsIndts)
+cor(WugeAsIsts, GlobPartyMbrsIndts)
+cor(TotalEtelAsIsts, GlobPartyMbrsIndts)
+cor(BlueEtelAsIsts , GlobPartyMbrsIndts)
+cor(RedEtelAsIsts , GlobPartyMbrsIndts)
+
+ 
+## The Global Party Members Index correlates ...
+##
+## 8. Monthly Change in Avg Export Price Chulwalar Index
+AvgExpPriceInd <- c(DataIndicators [99:110,2],DataIndicators [99:110,3],DataIndicators [99:110,4],DataIndicators [99:110,5],DataIndicators [99:110,6],DataIndicators [99:110,7])
+AvgExpPriceIndts <- ts(AvgExpPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(AvgExpPriceIndts, main="Avg Export Price Chulwalar Index")
+##  
+## Correlation of Average Export Price-Chulwalar Index correlates ... 
+cor(TotalAsIsts, AvgExpPriceIndts)
+cor(EfakAsIsts , AvgExpPriceIndts)
+cor(WugeAsIsts, AvgExpPriceIndts)
+cor(TotalEtelAsIsts, AvgExpPriceIndts)
+cor(BlueEtelAsIsts , AvgExpPriceIndts)
+cor(RedEtelAsIsts , AvgExpPriceIndts)
+
+ 
+## The Average Etel Production Price Index correlates ... PPI
+##
+## 9. Monthly Change in Avg Etel Production Price Index
+EtelProdPriceInd <- c(DataIndicators [113:124,2],DataIndicators [113:124,3],DataIndicators [113:124,4],DataIndicators [113:124,5],DataIndicators [113:124,6],DataIndicators [113:124,7])
+EtelProdPriceIndts <- ts(EtelProdPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(EtelProdPriceIndts, main="Avg Etel Production Price Index")
+##  
+## Correlation of Average Etel Production Price Index correlates ... 
+cor(TotalAsIsts, EtelProdPriceIndts)
+cor(EfakAsIsts , EtelProdPriceIndts)
+cor(WugeAsIsts, EtelProdPriceIndts)
+cor(TotalEtelAsIsts, EtelProdPriceIndts)
+cor(BlueEtelAsIsts , EtelProdPriceIndts)
+cor(RedEtelAsIsts , EtelProdPriceIndts)
+
+ 
+## The Average Export Price-Chulwalar Index correlates ... AEPI
+##
+## 10. Monthly Change in All Companies in Chulwalar
+ChulwalarIndx <- c(DataIndicators [127:138,2],DataIndicators [127:138,3],DataIndicators [127:138,4],DataIndicators [127:138,5],DataIndicators [127:138,6],DataIndicators [127:138,7])
+ChulwalarIndxts <- ts(ChulwalarIndx, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(ChulwalarIndxts, main="All Companies in Chulwalar Index")
+##  
+## Correlation of All Companies in Chulwalar Index correlates ... 
+cor(TotalAsIsts, ChulwalarIndxts)
+cor(EfakAsIsts , ChulwalarIndxts)
+cor(WugeAsIsts, ChulwalarIndxts)
+cor(TotalEtelAsIsts, ChulwalarIndxts)
+cor(BlueEtelAsIsts , ChulwalarIndxts)
+cor(RedEtelAsIsts , ChulwalarIndxts)
+
+ 
+## The All Companies in Chulwalar Index correlates ...
+##
+## 11. Monthly Change in Inflation in Chulwalar Index
+InflationInd <- c(DataIndicators [141:152,2],DataIndicators [141:152,3],DataIndicators [141:152,4],DataIndicators [141:152,5],DataIndicators [141:152,6],DataIndicators [141:152,7])
+InflationIndts <- ts(InflationInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(InflationIndts, main="Inflation Index in Chulwalar")
+##  
+## Correlation of Inflation Index correlates ... 
+cor(TotalAsIsts, InflationIndts)
+cor(EfakAsIsts , InflationIndts)
+cor(WugeAsIsts, InflationIndts)
+cor(TotalEtelAsIsts, InflationIndts)
+cor(BlueEtelAsIsts , InflationIndts)
+cor(RedEtelAsIsts , InflationIndts)
+
+ 
+## The Inflation Index correlates ...
+##
+## 12. Monthly Change in Spending for Indep Presents in Chulwalar Index 
+ChulwalarSpendDaysInd <- c(DataIndicators [155:166,2],DataIndicators [155:166,3],DataIndicators [155:166,4],DataIndicators [155:166,5],DataIndicators [155:166,6],DataIndicators [155:166,7])
+ChulwalarSpendDaysIndts <- ts(ChulwalarSpendDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(InflationIndts, main="Spending for Independence Presents in Chulwalar Index")
+##  
+## Correlation of Spending for Indep Presents in Chulwalar Index correlates ... 
+cor(TotalAsIsts, ChulwalarSpendDaysIndts)
+cor(EfakAsIsts , ChulwalarSpendDaysIndts)
+cor(WugeAsIsts, ChulwalarSpendDaysIndts)
+cor(TotalEtelAsIsts, ChulwalarSpendDaysIndts)
+cor(BlueEtelAsIsts , ChulwalarSpendDaysIndts)
+cor(RedEtelAsIsts , ChulwalarSpendDaysIndts)
+
+ 
+## The Spending for Indep Presents in Chulwalar Index correlates ...
+##
+## 13. Monthly Change in Influence of National Days in Chulwalar Index 
+InflChulwalarDaysInd <- c(DataIndicators [183:194,2],DataIndicators [183:194,3],DataIndicators [183:194,4],DataIndicators [183:194,5],DataIndicators [183:194,6],DataIndicators [183:194,7])
+InflChulwalarDaysIndts <- ts(InflChulwalarDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(InflChulwalarDaysIndts, main="Influence of National Days in Chulwalar Index")
+##  
+## Correlation of Influence of National Days in Chulwalar correlates ... 
+cor(TotalAsIsts, InflChulwalarDaysIndts)
+cor(EfakAsIsts , InflChulwalarDaysIndts)
+cor(WugeAsIsts, InflChulwalarDaysIndts)
+cor(TotalEtelAsIsts, InflChulwalarDaysIndts)
+cor(BlueEtelAsIsts , InflChulwalarDaysIndts)
+cor(RedEtelAsIsts , InflChulwalarDaysIndts)
+
+ 
+## [The Spending for Influence of National Days in Chulwalar Index correlates ...]
+##
+##
+##
+
+#  VIII-Forecast Modelling. 
+## - Fit Linear Models to Time Series.                    
+
+library(fpp)
+## Model all indicators at once
+AllIndModel <- tslm(TotalAsIsts ~ trend + season + CEPIIndts + GovSatIndts + AvgTempIndts + BirthIndts + SatIndIndepts + TotExUrbIndts + GlobPartyMbrsIndts + EtelProdPriceIndts + ChulwalarIndxts + InflationIndts + ChulwalarSpendDaysIndts + InflChulwalarDaysIndts)
+summary(AllIndModel)
+## Adjusted R²: 0.9106
+
+## CEPI:
+## The CEPI Indicator correlated best with total exports. Indeed the multiple R² 
+## improved the model slighltly compared to the simple ModelWithTrendAndSeasonalityOnly 
+## However the adjusted R² remains the same.
+ModelWithCEPI <- tslm(TotalAsIs ~ trend + season + CEPIIndts)
+summary(ModelWithCEPI)    
+## Adjusted R²: 0.9004
+
+## Gov Satisfaction:
+## The Satisfaction Index (gov)  hardly changes the function of the model.
+ModelWithSIGov <- tslm(TotalAsIs ~ trend + season + GovSatIndts)
+summary(ModelWithSIGov)    
+## Adjusted R²: 0.8994
+
+## Average Temperature:
+ModelWithTemperature <- tslm(TotalAsIs ~ trend + season + AvgTempIndts)
+summary(ModelWithTemperature)
+## Adjusted R²: 0.8993 
+
+## Births:
+ModelWithBirths <- tslm(TotalAsIs ~ trend + season + BirthIndts)
+summary(ModelWithBirths) 
+## Adjusted R²: 0.9088 
+
+## SIExtern:
+ModelWithSIExtern <- tslm(TotalAsIs ~ trend + season + SatIndIndepts)
+summary(ModelWithSIExtern) 
+## Adjusted R²: 0.8998 
+
+## UrbanoExports:
+## Indicator with adjusted R² shows a better result than the reference model (ModelWithTrendAndSeasonalityOnly).
+## The individual months are also very significant.
+ModelWithTotalUrbanoExports <- tslm(TotalAsIs ~ trend + season + TotExUsbIndts)
+summary(ModelWithTotalUrbanoExports) 
+## Adjusted R²: 0.9005 
+
+## GlobalisationPartyMembers:
+ModelWithGlobalisationPartyMembers <- tslm(TotalAsIs ~ trend + season + GlobPartyMbrsIndts)
+summary(ModelWithGlobalisationPartyMembers) 
+## Adjusted R²: 0.8991 
+
+## AEPI:
+ModelWithAEPI <- tslm(TotalAsIs ~ trend + season + ChulwalarIndxts)
+summary(ModelWithAEPI) 
+## Adjusted R²: 0.8999
+
+## PPIEtel:
+ModelWithPPIEtel <- tslm(TotalAsIs ~ trend + season + AvgExpPriceIndts)
+summary(ModelWithPPIEtel)
+## Adjusted R²: 0.9003 
+
+## NationalHolidays:
+## Indicator with the best adjusted R². The months remain very significant 
+## the indicator itself has a p-value of 0.00636
+ModelWithNationalHolidays <- tslm(TotalAsIs ~ trend + season + EtelProdPriceIndts)
+summary(ModelWithNationalHolidays)
+## Adjusted R²: 0.9110 
+
+## ChulwalarIndex:
+ModelWithChulwalarIndex <- tslm(TotalAsIs ~ trend + season + ChulwalarIndxts)
+summary(ModelWithChulwalarIndex) 
+## Adjusted R²: 0.9001
+
+## Inflation:
+ModelWithInflation <- tslm(TotalAsIs ~ trend + season + InflationIndts)
+summary(ModelWithInflation)
+## Adjusted R²: 0.8989
+
+## IndependenceDayPresents:
+ModelWithIndependenceDayPresents <- tslm(TotalAsIs ~ trend + season + ChulwalarSpendDaysIndts)
+summary(ModelWithIndependenceDayPresents)
+## Adjusted R²: 0.8993
+
+## InfluenceNationalHolidays:
+## Indicator with the best adjusted R². The months remain very significant and the indicator
+## itself has a p-value of 0,00636**
+ModelWithInfluenceNationalHolidays <- tslm(TotalAsIs ~ trend + season + InflChulwalarDaysIndts)
+summary(ModelWithInfluenceNationalHolidays)
+## Adjusted R²: 0.9110 
+##
+## [Analyis....]
+##
+
+
+

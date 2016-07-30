@@ -1,0 +1,937 @@
+---
+title: "CBanks_Week10CaseStudy"
+author: "C. Banks"
+date: "July 27, 2016"
+output: html_document
+---
+# INTRODUCTION
+## This assignment presents an analysis of the Chulwalr nation flower sales with seasonal data provided for interpretation of forecast vs actual.  
+## The purpose of this project will be to 1) determine relationships in flower sales with specific indicators and 2) identify a model for forecasting production of the flowers.
+
+# I-PREPARATION STAGE.
+ 
+## -Set working directory.
+## -Load libraries.
+## -Import data into R.
+## Import data into R -- 3 .csv files are provided. 
+## Files downloaded from SMU/MSDS6360/10.2.
+
+```{r setup, include=TRUE}
+library(repmis)
+library(downloader)
+library(data.table)
+library(timeSeries)
+library(zoo)
+library(tseries)
+library(xts)
+library(fpp)
+library(tcltk)
+library(plyr)
+library(dplyr) 
+library(ggplot2)
+library(reshape2)
+library(latticeExtra)
+library(googleVis)
+library(quantmod)
+library(PerformanceAnalytics)
+DataAsIs <- read.csv("ImportedAsIsDataChulwalar.csv",sep=";",fill=T)
+DataPlanned <- read.csv("ImportedPlanDataChulwalar.csv",sep=";",fill=T)
+DataIndicators <- read.csv("ImportedIndicatorsChulwalar.csv",sep=";",fill=T)
+## Check Data
+head(DataAsIs) 
+head(DataPlanned)
+head(DataIndicators)
+## Structure of data file 
+str(DataAsIs)   
+str(DataPlanned)
+str(DataIndicators)
+
+```
+## ##########################################################
+## II-DATA TIDY AND CONVERT.
+## Some overall comments on the data files:
+## -In all 3 of the imported files, there are NA's in row breaks and where data is missing for year.  
+## -There are multiple breaks or segments of data that can be made into separate datasets.
+## -Datasets are segmented by Totals, Efak, Wuge, Etel, blue Etel, red Etel and Total Yearly.  
+## -For the Indicators file, there are ~14 categories of indicators.  
+## -Subset the files and transform the data to time series.
+## ##########################################################
+```{r}
+## II-A Segment AsIs Datasets.
+TotalAsIs <- c(DataAsIs [1:12,2],DataAsIs [1:12,3],DataAsIs [1:12,4],DataAsIs [1:12,5],DataAsIs [1:12,6],DataAsIs [1:12,7])
+TotalAsIs2014 <- c(DataAsIs [1:12,8])
+EfakAsIs <- c(DataAsIs [15:26,2],DataAsIs [15:26,3],DataAsIs [15:26,4],DataAsIs [15:26,5],DataAsIs [15:26,6],DataAsIs [15:26,7])
+WugeAsIs <- c(DataAsIs [29:40,2],DataAsIs [29:40,3],DataAsIs [29:40,4],DataAsIs [29:40,5],DataAsIs [29:40,6],DataAsIs [29:40,7])
+TotalEtelAsIs <- c(DataAsIs [43:54,2],DataAsIs [43:54,3],DataAsIs [43:54,4],DataAsIs [43:54,5],DataAsIs [43:54,6],DataAsIs [43:54,7])
+BlueEtelAsIs <- c(DataAsIs [57:68,2],DataAsIs [57:68,3],DataAsIs [57:68,4],DataAsIs [57:68,5],DataAsIs [57:68,6],DataAsIs [57:68,7])
+RedEtelAsIs <- c(DataAsIs [71:82,2],DataAsIs [71:82,3],DataAsIs [71:82,4],DataAsIs [71:82,5],DataAsIs [71:82,6],DataAsIs [71:82,7])
+TotalYrlyAsIs <- c(DataAsIs [85,2],DataAsIs [85,3],DataAsIs [85,4],DataAsIs [85,5],DataAsIs [85,6],DataAsIs [85,7])
+
+## II-B Segment Planned Datasets.  
+TotalPlanned <- c(DataPlanned [1:12,2],DataPlanned [1:12,3],DataPlanned [1:12,4],DataPlanned [1:12,5],DataPlanned [1:12,6],DataPlanned [1:12,7])
+TotalPlanned2014 <- c(DataPlanned [1:12,8])
+CoffeePlanned <- c(DataPlanned [15:26,2],DataPlanned [15:26,3],DataPlanned [15:26,4],DataPlanned [15:26,5],DataPlanned [15:26,6],DataPlanned [15:26,7])
+SpicesPlanned <- c(DataPlanned [29:40,2],DataPlanned [29:40,3],DataPlanned [29:40,4],DataPlanned [29:40,5],DataPlanned [29:40,6],DataPlanned [29:40,7])
+TeaTotalPlanned <- c(DataPlanned [43:54,2],DataPlanned [43:54,3],DataPlanned [43:54,4],DataPlanned [43:54,5],DataPlanned [43:54,6],DataPlanned [43:54,7])
+LooseTeaPlanned <- c(DataPlanned [57:68,2],DataPlanned [57:68,3],DataPlanned [57:68,4],DataPlanned [57:68,5],DataPlanned [57:68,6],DataPlanned [57:68,7])
+TeaBagPlanned <- c(DataPlanned [71:82,2],DataPlanned [71:82,3],DataPlanned [71:82,4],DataPlanned [71:82,5],DataPlanned [71:82,6],DataPlanned [71:82,7])
+TotalYrlyPlanned <- c(DataPlanned [85,2],DataPlanned [85,3],DataPlanned [85,4],DataPlanned [85,5],DataPlanned [85,6],DataPlanned [85,7])
+
+
+## II-C Segment Indicator Datasets.
+ExpPriceChgInd <- c(DataIndicators [1:12,2],DataIndicators [1:12,3],DataIndicators [1:12,4],DataIndicators [1:12,5],DataIndicators [1:12,6],DataIndicators [1:12,7])
+GovSatInd <- c(DataIndicators [15:26,2],DataIndicators [15:26,3],DataIndicators [15:26,4],DataIndicators [15:26,5],DataIndicators [15:26,6],DataIndicators [15:26,7])
+AvgTempInd <- c(DataIndicators [29:40,2],DataIndicators [29:40,3],DataIndicators [29:40,4],DataIndicators [29:40,5],DataIndicators [29:40,6],DataIndicators [29:40,7])
+BirthsInd <- c(DataIndicators [43:54,2],DataIndicators [43:54,3],DataIndicators [43:54,4],DataIndicators [43:54,5],DataIndicators [43:54,6],DataIndicators [43:54,7])
+SatIndIndep <-c(DataIndicators [57:68,2],DataIndicators [57:68,3],DataIndicators [57:68,4],DataIndicators [57:68,5],DataIndicators [57:68,6],DataIndicators [57:68,7])
+TotExUrbInd <-c(DataIndicators [71:82,2],DataIndicators [71:82,3],DataIndicators [71:82,4],DataIndicators [71:82,5],DataIndicators [71:82,6],DataIndicators [71:82,7])
+TotExUrbInd2014 <-c(DataIndicators [71:82,8])
+GlobPartyMbrsInd <- c(DataIndicators [85:96,2],DataIndicators [85:96,3],DataIndicators [85:96,4],DataIndicators [85:96,5],DataIndicators [85:96,6],DataIndicators [85:96,7])
+GlobPartyMbrsInd2014 <-c(DataIndicators [85:96,8])
+AvgExpPriceInd <- c(DataIndicators [99:110,2],DataIndicators [99:110,3],DataIndicators [99:110,4],DataIndicators [99:110,5],DataIndicators [99:110,6],DataIndicators [99:110,7])
+EtelProdPriceInd <- c(DataIndicators [113:124,2],DataIndicators [113:124,3],DataIndicators [113:124,4],DataIndicators [113:124,5],DataIndicators [113:124,6],DataIndicators [113:124,7])
+ChulwalarIndx <- c(DataIndicators [127:138,2],DataIndicators [127:138,3],DataIndicators [127:138,4],DataIndicators [127:138,5],DataIndicators [127:138,6],DataIndicators [127:138,7])
+ChulwalarIndx2014 <-c(DataIndicators [127:138,8])
+InflationInd <- c(DataIndicators [141:152,2],DataIndicators [141:152,3],DataIndicators [141:152,4],DataIndicators [141:152,5],DataIndicators [141:152,6],DataIndicators [141:152,7])
+InflationInd2014 <-c(DataIndicators [141:152,8])
+ChulwalarSpendDaysInd <- c(DataIndicators [155:166,2],DataIndicators [155:166,3],DataIndicators [155:166,4],DataIndicators [155:166,5],DataIndicators [155:166,6],DataIndicators [155:166,7])
+ChulwalarSpendDaysInd2014 <-c(DataIndicators [155:166,8])
+ChulwalarDaysInd <- c(DataIndicators [169:180,2],DataIndicators [169:180,3],DataIndicators [169:180,4],DataIndicators [169:180,5],DataIndicators [169:180,6],DataIndicators [166:180,7])
+ChulwalarDaysInd2014 <-c(DataIndicators [169:180,8])
+InflChulwalarDaysInd <- c(DataIndicators [183:194,2],DataIndicators [183:194,3],DataIndicators [183:194,4],DataIndicators [183:194,5],DataIndicators [183:194,6],DataIndicators [183:194,7])
+InflChulwalarDaysInd2014 <-c(DataIndicators [183:194,8])
+
+
+## ##########################################################
+## II-D Convert vectorized data into time series.
+## ##########################################################
+
+
+TotalAsIsts<- ts(TotalAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+TotalAsIsts2014 <- ts(TotalAsIs2014, start=c(2014,1), end=c(2014,12), frequency=12)
+EfakAsIsts<- ts(EfakAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+WugeAsIsts<- ts(WugeAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+TotalEtelAsIsts<- ts(TotalEtelAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+BlueEtelAsIsts<- ts(BlueEtelAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+RedEtelAsIsts<- ts(RedEtelAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+TotalYrlyAsIsts<- ts(TotalYrlyAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+
+
+TotalPlannedts <- ts(TotalPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TotalPlanned2014ts <- ts(TotalPlanned2014, start=c(2014,1), end=c(2014,12), frequency=12)
+CoffeePlannedts <- ts(CoffeePlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+SpicesPlannedts <- ts(SpicesPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TeaTotalPlannedts <- ts(TeaTotalPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+LooseTeaPlannedts <- ts(LooseTeaPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TeaBagPlannedts <- ts(TeaBagPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TotalYrlyPlannedts <- ts(TotalYrlyPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+
+```
+
+# III-Basic Analysis 
+## -Time Series Plots.
+## -Linear Relationships.
+
+
+
+```{r}
+
+
+plot(TotalAsIsts, col="black", main="TotalAsIs")
+plot(EfakAsIsts, col="red",main="EfakAsIs")
+plot(WugeAsIsts, col="blue", main="WugeAsIs")
+plot(TotalEtelAsIsts, col="green",main="TotalEtelAsIs")
+plot(BlueEtelAsIsts, col="orange", main="BlueEtelAsIs")
+plot(RedEtelAsIsts, col="purple", main="RedEtelAsIs")
+plot(TotalYrlyAsIsts, col="pink", main="TotalYrlyAsIs")
+plot(TotalPlannedts , col="black", main="TotalPlan")
+plot(CoffeePlannedts , col="red",main="CoffeePlan")
+plot(SpicesPlannedts, col="blue", main="SpicesPlan")
+plot(TeaTotalPlannedts, col="green",main="TeaTotalPlan")
+plot(LooseTeaPlannedts, col="orange", main="LooseTeaPlan")
+plot(TeaBagPlannedts, col="purple", main="TeaBagPlan")
+plot(TotalYrlyPlannedts, col="pink", main="TotalYrlyPlan")
+
+ 
+
+cor(TotalAsIsts, TotalPlannedts)
+
+cor(EfakAsIsts, CoffeePlannedts)
+cor(EfakAsIsts, SpicesPlannedts)
+cor(EfakAsIsts, TeaTotalPlannedts)
+cor(EfakAsIsts, LooseTeaPlannedts)
+cor(EfakAsIsts, TeaBagPlannedts)
+
+
+cor(WugeAsIsts, CoffeePlannedts)
+cor(WugeAsIsts, SpicesPlannedts)
+cor(WugeAsIsts, TeaTotalPlannedts)
+cor(WugeAsIsts, LooseTeaPlannedts)
+cor(WugeAsIsts, TeaBagPlannedts)
+
+
+cor(TotalEtelAsIsts, CoffeePlannedts)
+cor(TotalEtelAsIsts, SpicesPlannedts)
+cor(TotalEtelAsIsts, TeaTotalPlannedts)
+cor(TotalEtelAsIsts, LooseTeaPlannedts)
+cor(TotalEtelAsIsts, TeaBagPlannedts)
+
+
+cor(BlueEtelAsIsts, CoffeePlannedts)
+cor(BlueEtelAsIsts, SpicesPlannedts)
+cor(BlueEtelAsIsts, TeaTotalPlannedts)
+cor(BlueEtelAsIsts, LooseTeaPlannedts)
+cor(BlueEtelAsIsts, TeaBagPlannedts)
+
+
+
+cor(RedEtelAsIsts, CoffeePlannedts)
+cor(RedEtelAsIsts, SpicesPlannedts)
+cor(RedEtelAsIsts, TeaTotalPlannedts)
+cor(RedEtelAsIsts, LooseTeaPlannedts)
+cor(RedEtelAsIsts, TeaBagPlannedts)
+
+
+cor(TotalYrlyAsIsts, CoffeePlannedts)
+cor(TotalYrlyAsIsts, SpicesPlannedts)
+cor(TotalYrlyAsIsts, TeaTotalPlannedts)
+cor(TotalYrlyAsIsts, LooseTeaPlannedts)
+cor(TotalYrlyAsIsts, TeaBagPlannedts)
+```
+## IV-Linear Modelling including trend and seasonality.
+```{r}
+## LM
+TotalAsIs_lm <- lm(TotalAsIsts ~ TotalPlannedts , data = TotalAsIsts)
+summary(TotalAsIs_lm)
+## TSLM
+TotalAsIsfit <- tslm(TotalAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(TotalAsIsfit, h=72))
+##
+## LM
+EfakAsIstoCoffee_lm <- lm(EfakAsIsts ~ CoffeePlannedts , data = EfakAsIsts)
+summary(EfakAsIstoCoffee_lm)
+## TSLM
+EfakAsIsfit <- tslm(EfakAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(EfakAsIsfit, h=72))
+
+## LM
+EfakAsIstoSpices_lm <- lm(EfakAsIsts ~ SpicesPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoSpices_lm)
+## TSLM
+EfakAsIstoSpicesfit <- tslm(EfakAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(EfakAsIstoSpicesfit, h=72))
+
+## LM
+EfakAsIstoTeaTotal_lm <- lm(EfakAsIsts ~ TeaTotalPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoTeaTotal_lm)
+## TSLM
+EfakAsIstoTeaTotalfit <- tslm(EfakAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(EfakAsIstoTeaTotalfit, h=72))
+
+## LM
+EfakAsIstoLooseTea_lm <- lm(EfakAsIsts ~ LooseTeaPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoLooseTea_lm)
+## TSLM
+EfakAsIstoLooseTeafit <- tslm(EfakAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(EfakAsIstoLooseTeafit, h=72))
+
+## LM
+EfakAsIstoTeaBag_lm <- lm(EfakAsIsts ~ TeaBagPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoTeaBag_lm)
+## TSLM
+EfakAsIstoTeaBagfit <- tslm(EfakAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(EfakAsIstoTeaBagfit, h=72))
+
+##
+## LM of WugeAsIs to Planned Series
+## 
+## LM
+WugeAsIstoCoffee_lm <- lm(WugeAsIsts ~ CoffeePlannedts , data = WugeAsIsts)
+summary(WugeAsIstoCoffee_lm)
+## TSLM
+WugeAsIstoCoffeefit <- tslm(WugeAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(WugeAsIstoCoffeefit, h=72))
+
+## LM
+WugeAsIstoSpices_lm <- lm(WugeAsIsts ~ SpicesPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoSpices_lm)
+## TSLM
+WugeAsIstoSpicesfit <- tslm(WugeAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(WugeAsIstoSpicesfit, h=72))
+
+## LM 
+WugeAsIstoTeaTotal_lm <- lm(WugeAsIsts ~ TeaTotalPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoTeaTotal_lm)
+##
+## TSLM
+WugeAsIstoTeaTotalfit <- tslm(WugeAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(WugeAsIstoTeaTotalfit, h=72))
+
+## LM
+WugeAsIstoLooseTea_lm <- lm(WugeAsIsts ~ LooseTeaPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoLooseTea_lm)
+## TSLM
+WugeAsIstoLooseTeafit <- tslm(WugeAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(WugeAsIstoLooseTeafit, h=72))
+
+## LM
+WugeAsIstoTeaBag_lm <- lm(WugeAsIsts ~ TeaBagPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoTeaBag_lm)
+## TSLM
+WugeAsIstoTeaBagfit <- tslm(WugeAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(WugeAsIstoTeaBagfit, h=72))
+##
+##
+## LM
+TotalEtelAsIs_lm <- lm(TotalEtelAsIsts ~ TotalPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIs_lm)
+## TSLM
+TotalEtelAsIsfit <- tslm(TotalEtelAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(TotalEtelAsIsfit, h=72))
+
+##LM
+TotalEtelAsIstoCoffee_lm <- lm(TotalEtelAsIsts ~ CoffeePlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoCoffee_lm)
+## TSLM
+TotalEtelAsIstoCoffeefit <- tslm(TotalEtelAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoCoffeefit, h=72))
+
+## LM
+TotalEtelAsIsSpices_lm <- lm(TotalEtelAsIsts ~ SpicesPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIsSpices_lm)
+## TSLM
+TotalEtelAsIstoSpicesfit <- tslm(TotalEtelAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoSpicesfit, h=72))
+
+## LM
+TotalEtelAsIstoTeaTotal_lm <- lm(TotalEtelAsIsts ~ TeaTotalPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoTeaTotal_lm)
+## TSLM
+TotalEtelAsIstoTeaTotalfit <- tslm(TotalEtelAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoTeaTotalfit, h=72))
+
+## LM
+TotalEtelAsIstoLooseTea_lm <- lm(TotalEtelAsIsts ~ LooseTeaPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoLooseTea_lm)
+## TSLM
+TotalEtelAsIstoLooseTeafit <- tslm(TotalEtelAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoLooseTeafit, h=72))
+
+## LM
+TotalEtelAsIstoTeaBag_lm <- lm(TotalEtelAsIsts ~ TeaBagPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoTeaBag_lm)
+## TSLM
+TotalEtelAsIstoTeaBagfit <- tslm(TotalEtelAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoTeaBagfit, h=72))
+
+##
+##
+## LM
+BlueEtelAsIs_lm <- lm(BlueEtelAsIsts ~ TotalPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIs_lm)
+## TSLM
+BlueEtelAsIsfit <- tslm(BlueEtelAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(BlueEtelAsIsfit, h=72))
+
+##LM
+BlueEtelAsIstoCoffee_lm <- lm(BlueEtelAsIsts ~ CoffeePlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoCoffee_lm)
+## TSLM
+BlueEtelAsIstoCoffeefit <- tslm(BlueEtelAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoCoffeefit, h=72))
+
+## LM
+BlueEtelAsIstoSpices_lm <- lm(BlueEtelAsIsts ~ SpicesPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoSpices_lm)
+## TSLM
+BlueEtelAsIstoSpicesfit <- tslm(BlueEtelAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoSpicesfit, h=72))
+
+## LM
+BlueEtelAsIstoTeaTotal_lm <- lm(BlueEtelAsIsts ~ TeaTotalPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoTeaTotal_lm)
+## TSLM
+TotalEtelAsIstoTeaTotalfit <- tslm(BlueEtelAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoTeaTotalfit, h=72))
+
+## LM
+BlueEtelAsIstoLooseTea_lm <- lm(BlueEtelAsIsts ~ LooseTeaPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoLooseTea_lm)
+## TSLM
+BlueEtelAsIstoLooseTeafit <- tslm(BlueEtelAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoLooseTeafit, h=72))
+
+## LM
+BlueEtelAsIstoTeaBag_lm <- lm(BlueEtelAsIsts ~ TeaBagPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoTeaBag_lm)
+## TSLM
+BlueEtelAsIstoTeaBagfit <- tslm(BlueEtelAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoTeaBagfit, h=72))
+
+##
+##
+## LM
+RedEtelAsIstoTotal_lm <- lm(RedEtelAsIsts ~ TotalPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoTotal_lm)
+## TSLM
+RedEtelAsIsfit <- tslm(RedEtelAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(RedEtelAsIsfit, h=72))
+
+##LM
+RedEtelAsIstoCoffee_lm <- lm(RedEtelAsIsts ~ CoffeePlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoCoffee_lm)
+## TSLM
+RedEtelAsIstoCoffeefit <- tslm(RedEtelAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(RedEtelAsIstoCoffeefit, h=72))
+
+## LM
+RedEtelAsIstoSpices_lm <- lm(RedEtelAsIsts ~ SpicesPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoSpices_lm)
+## TSLM
+RedEtelAsIstoSpicesfit <- tslm(RedEtelAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoSpicesfit, h=72))
+
+## LM
+RedEtelAsIstoTeaTotal_lm <- lm(RedEtelAsIsts ~ TeaTotalPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoTeaTotal_lm)
+## TSLM
+RedEtelAsIstoTeaTotalfit <- tslm(RedEtelAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoTeaTotalfit, h=72))
+
+## LM
+RedEtelAsIstoLooseTea_lm <- lm(RedEtelAsIsts ~ LooseTeaPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoLooseTea_lm)
+## TSLM
+RedEtelAsIstoLooseTeafit <- tslm(RedEtelAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoLooseTeafit, h=72))
+
+## LM
+RedEtelAsIstoTeaBag_lm <- lm(RedEtelAsIsts ~ TeaBagPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoTeaBag_lm)
+## TSLM
+RedEtelAsIstoTeaBagfit <- tslm(RedEtelAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoTeaBagfit, h=72))
+##
+
+```
+
+# V-AIC All Linear Model Comparisons.
+
+```{r}
+## AIC All EfakAsIs to Planned Linear Models
+AIC(EfakAsIstoCoffee_lm, EfakAsIstoSpices_lm, EfakAsIstoTeaTotal_lm, EfakAsIstoLooseTea_lm, EfakAsIstoTeaBag_lm)
+##
+## AIC All WugeAsIs to Planned Linear Models
+AIC(WugeAsIstoCoffee_lm, WugeAsIstoSpices_lm, WugeAsIstoTeaTotal_lm, WugeAsIstoLooseTea_lm, WugeAsIstoTeaBag_lm)
+##
+## AIC All TotalEtelAsIs to Planned Linear Models
+AIC(TotalEtelAsIs_lm, TotalEtelAsIstoCoffee_lm, TotalEtelAsIsSpices_lm, TotalEtelAsIstoTeaTotal_lm, TotalEtelAsIstoLooseTea_lm, TotalEtelAsIstoTeaBag_lm)
+##
+## AIC All BlueEtelAsIs to Planned Linear Models
+AIC (BlueEtelAsIstoCoffee_lm, BlueEtelAsIstoSpices_lm, BlueEtelAsIstoTeaTotal_lm, BlueEtelAsIstoLooseTea_lm, BlueEtelAsIstoTeaBag_lm)
+##
+## AIC All RedEtelAsIs to Planned Linear Models
+AIC (RedEtelAsIstoTotal_lm, RedEtelAsIstoCoffee_lm, RedEtelAsIstoSpices_lm, RedEtelAsIstoTeaTotal_lm, RedEtelAsIstoLooseTea_lm, RedEtelAsIstoTeaBag_lm)
+##
+```
+
+#  VI-Time Series Modelling using Decomposition.
+## -Classical. 
+## -STL.
+## -Plot fitted, compute/plot seasonally adjusted data.
+
+```{r}
+## Decomposed
+fitdTotalAsIsts <- decompose(TotalAsIsts)
+plot(fitdTotalAsIsts)
+## Seasonally Adjusted
+TotalAsIstsadj <- seasadj(fitdTotalAsIsts)
+plot(TotalAsIstsadj)
+##
+## Decomposed
+fitdEfakAsIsts <- decompose(EfakAsIsts)
+plot(fitdEfakAsIsts)
+## Seasonally Adjusted
+EfakAsIstsadj <- seasadj(fitdEfakAsIsts)
+plot(EfakAsIstsadj)
+##
+## Decomposed
+fitdWugeAsIsts <- decompose(WugeAsIsts)
+plot(fitdWugeAsIsts)
+##
+## Seasonally Adjusted
+WugeAsIstsadj <- seasadj(fitdWugeAsIsts)
+plot(WugeAsIstsadj)
+
+##
+## Decomposed
+fitdTotalEtelAsIsts <- decompose(TotalEtelAsIsts)
+plot(fitdTotalEtelAsIsts)
+## Seasonally Adjusted
+TotalEtelAsIstsadj <- seasadj(fitdTotalEtelAsIsts)
+plot(TotalEtelAsIstsadj)
+
+##
+## Decomposed
+fitdBlueEtelAsIsts <- decompose(BlueEtelAsIsts)
+plot(fitdBlueEtelAsIsts)
+## Seasonally Adjusted
+BlueEtelAsIstsadj <- seasadj(fitdBlueEtelAsIsts)
+plot(BlueEtelAsIstsadj)
+##
+## Decomposed
+fitdRedEtelAsIsts <- decompose(RedEtelAsIsts)
+plot(fitdRedEtelAsIsts)
+## Seasonally Adjusted
+RedEtelAsIstsadj <- seasadj(fitdRedEtelAsIsts)
+plot(RedEtelAsIstsadj)
+## Seasonal and Trend Decomposition using the Loess Method (STL)
+## STL is useful where nonlinearity exists...
+##
+TotalAsIs_stl <- stl(TotalAsIsts, s.window=5)
+EfakAsIs_stl <- stl(EfakAsIsts, s.window=5)
+WugeAsIs_stl <- stl(WugeAsIsts, s.window=5)
+TotalEtelAsIs_stl <- stl(TotalEtelAsIsts, s.window=5)
+BlueEtelAsIs_stl <- stl(BlueEtelAsIsts, s.window=5)
+RedEtelAsIs_stl <- stl(RedEtelAsIsts, s.window=5)
+##
+plot(TotalAsIs_stl, col="black", main="TotalAsIs_stl")
+plot(EfakAsIs_stl, col="black", main="EfakAsIs_stl")
+plot(WugeAsIs_stl, col="black", main="WugeAsIs_stl")
+plot(TotalEtelAsIs_stl, col="black", main="TotalEtelAsIs_stl")
+plot(BlueEtelAsIs_stl, col="black", main="BlueEtelAsIs_stl")
+plot(RedEtelAsIs_stl, col="black", main="RedEtelAsIs_stl")
+plot(TotalAsIs_stl$time.series[,"trend"], col="black")
+plot(EfakAsIs_stl$time.series[,"trend"], col="red")
+plot(WugeAsIs_stl$time.series[,"trend"], col="blue")
+plot(TotalEtelAsIs_stl$time.series[,"trend"], col="green")
+plot(BlueEtelAsIs_stl$time.series[,"trend"], col="orange")
+plot(RedEtelAsIs_stl$time.series[,"trend"], col="purple")
+
+```
+
+# VII-Analysis of Indicators.                                                   
+## - Correlate each indicator with AsIs series.
+## - Test correlations against exports.
+
+```{r}
+## VII-A Convert Indicators to Time Series.
+TotExUrbIndts <- ts(TotExUrbInd, start=c(2008,1), end=c(2013,12), frequency=12)
+TotExUrbInd2014ts <- ts(TotExUrbInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+ExpPriceChgIndts <- ts(ExpPriceChgInd, start=c(2008,1), end=c(2013,12), frequency=12)
+GovSatIndts <- ts(GovSatInd, start=c(2008,1), end=c(2013,12), frequency=12)
+AvgTempIndts <- ts(AvgTempInd, start=c(2008,1), end=c(2013,12), frequency=12)
+BirthsIndts <- ts(BirthsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+SatIndIndepts <- ts(SatIndIndep, start=c(2008,1), end=c(2013,12), frequency=12)
+GlobPartyMbrsIndts <- ts(GlobPartyMbrsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+GlobPartyMbrsInd2014ts <- ts(GlobPartyMbrsInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+AvgExpPriceIndts <- ts(AvgExpPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+EtelProdPriceIndts <- ts(EtelProdPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarIndxts <- ts(ChulwalarIndx, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarIndx2014ts <- ts(ChulwalarIndx2014, start=c(2014,1), end=c(2014,12), frequency=12)
+InflationIndts <- ts(InflationInd, start=c(2008,1), end=c(2013,12), frequency=12)
+InflationInd2014ts <- ts(InflationInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+ChulwalarSpendDaysIndts <- ts(ChulwalarSpendDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarSpendDaysInd2014ts <- ts(ChulwalarSpendDaysInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+ChulwalarDaysIndts <- ts(ChulwalarDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+ChulwalarDaysInd2014ts <- ts(ChulwalarDaysInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+InflChulwalarDaysIndts <- ts(InflChulwalarDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+InflChulwalarDaysInd2014ts <- ts(InflChulwalarDaysInd2014, start=c(2014,1), end=c(2014,12), frequency=12)
+
+## VII-B Correlate external indicators to As Is Series.
+
+## 1.  Monthly Change in Export Price Index (CEPI)
+CEPIInd <- c(DataIndicators [1:12,2],DataIndicators [1:12,3],DataIndicators [1:12,4],DataIndicators [1:12,5],DataIndicators [1:12,6],DataIndicators [1:12,7])
+CEPIIndts <- ts(CEPIInd , start=c(2008,1), end=c(2013,12), frequency=12)
+plot(CEPIIndts, main="CEPI")
+##  
+## Correlation of CEPI to As Is Exports...
+cor(TotalAsIsts, CEPIIndts)
+cor(EfakAsIsts , CEPIIndts)
+cor(WugeAsIsts, CEPIIndts)
+cor(TotalEtelAsIsts, CEPIIndts)
+cor(BlueEtelAsIsts , CEPIIndts)
+cor(RedEtelAsIsts , CEPIIndts)
+
+
+## The CEPI correlates very well with the efak exports.
+##  
+## 2.  Monthly Change in Gov't Satisfaction Index 
+GovSatInd <- c(DataIndicators [15:26,2],DataIndicators [15:26,3],DataIndicators [15:26,4],DataIndicators [15:26,5],DataIndicators [15:26,6],DataIndicators [15:26,7])
+GovSatIndts <- ts(GovSatInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(GovSatIndts, main="Gov't. Satisfaction Index")
+##  
+## Correlation of Gov't Satisfaction Index to As Is Exports...
+cor(TotalAsIsts, GovSatIndts)
+cor(EfakAsIsts , GovSatIndts)
+cor(WugeAsIsts, GovSatIndts)
+cor(TotalEtelAsIsts, GovSatIndts)
+cor(BlueEtelAsIsts , GovSatIndts)
+cor(RedEtelAsIsts , GovSatIndts)
+
+
+## The Gov't Satisfaction Index correlates ...
+##
+## 3.  Monthly Change in Average Temperature Index
+AvgTempInd <- c(DataIndicators [29:40,2],DataIndicators [29:40,3],DataIndicators [29:40,4],DataIndicators [29:40,5],DataIndicators [29:40,6],DataIndicators [29:40,7])
+AvgTempIndts <- ts(AvgTempInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(AvgTempIndts, main="Avg Temperature Index")
+##  
+## Correlation of Average Temperature Index correlates ... 
+cor(TotalAsIsts, AvgTempIndts)
+cor(EfakAsIsts , AvgTempIndts)
+cor(WugeAsIsts, AvgTempIndts)
+cor(TotalEtelAsIsts, AvgTempIndts)
+cor(BlueEtelAsIsts , AvgTempIndts)
+cor(RedEtelAsIsts , AvgTempIndts)
+
+
+## The Average Temperature Index correlates ...
+##
+## 4. Monthly Change in Births Index
+BirthsInd <- c(DataIndicators [43:54,2],DataIndicators [43:54,3],DataIndicators [43:54,4],DataIndicators [43:54,5],DataIndicators [43:54,6],DataIndicators [43:54,7])
+BirthsIndts <- ts(BirthsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(BirthsIndts, main="Births Index")
+##  
+## Correlation of Births Index  ... 
+cor(TotalAsIsts, BirthsIndts)
+cor(EfakAsIsts , BirthsIndts)
+cor(WugeAsIsts, BirthsIndts)
+cor(TotalEtelAsIsts, BirthsIndts)
+cor(BlueEtelAsIsts , BirthsIndts)
+cor(RedEtelAsIsts , BirthsIndts)
+
+ 
+## The Births Index correlates ...
+##
+## 5. Monthly Change in Independent Satisfaction Index
+SatIndIndep <-c(DataIndicators [57:68,2],DataIndicators [57:68,3],DataIndicators [57:68,4],DataIndicators [57:68,5],DataIndicators [57:68,6],DataIndicators [57:68,7])
+SatIndIndepts <- ts(SatIndIndep, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(SatIndIndepts, main="Indep. Satisfaction Index")
+##  
+## Correlation of Independent Satisfaction Index ... 
+cor(TotalAsIsts, SatIndIndepts)
+cor(EfakAsIsts , SatIndIndepts)
+cor(WugeAsIsts, SatIndIndepts)
+cor(TotalEtelAsIsts, SatIndIndepts)
+cor(BlueEtelAsIsts , SatIndIndepts)
+cor(RedEtelAsIsts , SatIndIndepts)
+
+ 
+## The Independent Satisfaction Index correlates ...
+##
+## 6. Monthly Change in Total Urbano Exports Index
+TotExUrbInd <-c(DataIndicators [71:82,2],DataIndicators [71:82,3],DataIndicators [71:82,4],DataIndicators [71:82,5],DataIndicators [71:82,6],DataIndicators [71:82,7])
+TotExUrbIndts <- ts(TotExUrbInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(TotExUrbIndts, main="Total Urbano Exports Index")
+##  
+## Correlation of Total Urbano Exports Index  ... 
+cor(TotalAsIsts, TotExUrbIndts)
+cor(EfakAsIsts , TotExUrbIndts)
+cor(WugeAsIsts, TotExUrbIndts)
+cor(TotalEtelAsIsts, TotExUrbIndts)
+cor(BlueEtelAsIsts , TotExUrbIndts)
+cor(RedEtelAsIsts , TotExUrbIndts)
+
+ 
+## The Average Total Urbano Exports Index correlates ...
+##
+## 7. Monthly Change in # of Global Party Members Index
+GlobPartyMbrsInd <- c(DataIndicators [85:96,2],DataIndicators [85:96,3],DataIndicators [85:96,4],DataIndicators [85:96,5],DataIndicators [85:96,6],DataIndicators [85:96,7])
+GlobPartyMbrsIndts <- ts(GlobPartyMbrsInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(GlobPartyMbrsIndts, main="# of Global Party Members Index")
+##  
+## Correlation of Global Party Members Index correlates ... 
+cor(TotalAsIsts, GlobPartyMbrsIndts)
+cor(EfakAsIsts , GlobPartyMbrsIndts)
+cor(WugeAsIsts, GlobPartyMbrsIndts)
+cor(TotalEtelAsIsts, GlobPartyMbrsIndts)
+cor(BlueEtelAsIsts , GlobPartyMbrsIndts)
+cor(RedEtelAsIsts , GlobPartyMbrsIndts)
+
+ 
+## The Global Party Members Index correlates ...
+##
+## 8. Monthly Change in Avg Export Price Chulwalar Index
+AvgExpPriceInd <- c(DataIndicators [99:110,2],DataIndicators [99:110,3],DataIndicators [99:110,4],DataIndicators [99:110,5],DataIndicators [99:110,6],DataIndicators [99:110,7])
+AvgExpPriceIndts <- ts(AvgExpPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(AvgExpPriceIndts, main="Avg Export Price Chulwalar Index")
+##  
+## Correlation of Average Export Price-Chulwalar Index correlates ... 
+cor(TotalAsIsts, AvgExpPriceIndts)
+cor(EfakAsIsts , AvgExpPriceIndts)
+cor(WugeAsIsts, AvgExpPriceIndts)
+cor(TotalEtelAsIsts, AvgExpPriceIndts)
+cor(BlueEtelAsIsts , AvgExpPriceIndts)
+cor(RedEtelAsIsts , AvgExpPriceIndts)
+
+ 
+## The Average Export Price-Chulwalar Index correlates ...
+##
+## 9. Monthly Change in Avg Etel Production Price Index
+EtelProdPriceInd <- c(DataIndicators [113:124,2],DataIndicators [113:124,3],DataIndicators [113:124,4],DataIndicators [113:124,5],DataIndicators [113:124,6],DataIndicators [113:124,7])
+EtelProdPriceIndts <- ts(EtelProdPriceInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(EtelProdPriceIndts, main="Avg Etel Production Price Index")
+##  
+## Correlation of Average Etel Production Price Index correlates ... 
+cor(TotalAsIsts, EtelProdPriceIndts)
+cor(EfakAsIsts , EtelProdPriceIndts)
+cor(WugeAsIsts, EtelProdPriceIndts)
+cor(TotalEtelAsIsts, EtelProdPriceIndts)
+cor(BlueEtelAsIsts , EtelProdPriceIndts)
+cor(RedEtelAsIsts , EtelProdPriceIndts)
+
+ 
+## The Average Etel Production Price Index correlates ...
+##
+## 10. Monthly Change in All Companies in Chulwalar
+ChulwalarIndx <- c(DataIndicators [127:138,2],DataIndicators [127:138,3],DataIndicators [127:138,4],DataIndicators [127:138,5],DataIndicators [127:138,6],DataIndicators [127:138,7])
+ChulwalarIndxts <- ts(ChulwalarIndx, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(ChulwalarIndxts, main="All Companies in Chulwalar Index")
+##  
+## Correlation of All Companies in Chulwalar Index correlates ... 
+cor(TotalAsIsts, ChulwalarIndxts)
+cor(EfakAsIsts , ChulwalarIndxts)
+cor(WugeAsIsts, ChulwalarIndxts)
+cor(TotalEtelAsIsts, ChulwalarIndxts)
+cor(BlueEtelAsIsts , ChulwalarIndxts)
+cor(RedEtelAsIsts , ChulwalarIndxts)
+
+ 
+## The All Companies in Chulwalar Index correlates ...
+##
+## 11. Monthly Change in Inflation in Chulwalar Index
+InflationInd <- c(DataIndicators [141:152,2],DataIndicators [141:152,3],DataIndicators [141:152,4],DataIndicators [141:152,5],DataIndicators [141:152,6],DataIndicators [141:152,7])
+InflationIndts <- ts(InflationInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(InflationIndts, main="Inflation Index in Chulwalar")
+##  
+## Correlation of Inflation Index correlates ... 
+cor(TotalAsIsts, InflationIndts)
+cor(EfakAsIsts , InflationIndts)
+cor(WugeAsIsts, InflationIndts)
+cor(TotalEtelAsIsts, InflationIndts)
+cor(BlueEtelAsIsts , InflationIndts)
+cor(RedEtelAsIsts , InflationIndts)
+
+ 
+## The Inflation Index correlates ...
+##
+## 12. Monthly Change in Spending for Indep Presents in Chulwalar Index 
+ChulwalarSpendDaysInd <- c(DataIndicators [155:166,2],DataIndicators [155:166,3],DataIndicators [155:166,4],DataIndicators [155:166,5],DataIndicators [155:166,6],DataIndicators [155:166,7])
+ChulwalarSpendDaysIndts <- ts(ChulwalarSpendDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(InflationIndts, main="Spending for Independence Presents in Chulwalar Index")
+##  
+## Correlation of Spending for Indep Presents in Chulwalar Index correlates ... 
+cor(TotalAsIsts, ChulwalarSpendDaysIndts)
+cor(EfakAsIsts , ChulwalarSpendDaysIndts)
+cor(WugeAsIsts, ChulwalarSpendDaysIndts)
+cor(TotalEtelAsIsts, ChulwalarSpendDaysIndts)
+cor(BlueEtelAsIsts , ChulwalarSpendDaysIndts)
+cor(RedEtelAsIsts , ChulwalarSpendDaysIndts)
+
+ 
+## The Spending for Indep Presents in Chulwalar Index correlates ...
+##
+## 13. Monthly Change in Influence of National Days in Chulwalar Index 
+InflChulwalarDaysInd <- c(DataIndicators [183:194,2],DataIndicators [183:194,3],DataIndicators [183:194,4],DataIndicators [183:194,5],DataIndicators [183:194,6],DataIndicators [183:194,7])
+InflChulwalarDaysIndts <- ts(InflChulwalarDaysInd, start=c(2008,1), end=c(2013,12), frequency=12)
+plot(InflChulwalarDaysIndts, main="Influence of National Days in Chulwalar Index")
+##  
+## Correlation of Influence of National Days in Chulwalar correlates ... 
+cor(TotalAsIsts, InflChulwalarDaysIndts)
+cor(EfakAsIsts , InflChulwalarDaysIndts)
+cor(WugeAsIsts, InflChulwalarDaysIndts)
+cor(TotalEtelAsIsts, InflChulwalarDaysIndts)
+cor(BlueEtelAsIsts , InflChulwalarDaysIndts)
+cor(RedEtelAsIsts , InflChulwalarDaysIndts)
+
+```
+
+#  VIII-Forecast Modelling. 
+## - Fit Linear Models to Time Series.                    
+
+```{r}
+library(fpp)
+## Model all indicators at once
+AllIndModel <- tslm(TotalAsIsts ~ trend + season + CEPIIndts + GovSatIndts + AvgTempIndts + BirthsIndts + SatIndIndepts + TotExUrbIndts + GlobPartyMbrsIndts + AvgExpPriceIndts + EtelProdPriceIndts + ChulwalarIndxts + InflationIndts + ChulwalarSpendDaysIndts + InflChulwalarDaysIndts)
+summary(AllIndModel)
+## Adjusted R²: 0.9106
+
+## CEPI:
+## The CEPI Indicator correlated best with total exports. Indeed the multiple R² 
+## improved the model slighltly compared to the simple ModelWithTrendAndSeasonalityOnly 
+## However the adjusted R² remains the same.
+ModelWithCEPI <- tslm(TotalAsIsts ~ trend + season + CEPIIndts)
+summary(ModelWithCEPI)    
+## Adjusted R²: 0.9004
+
+## Gov Satisfaction:
+## The Satisfaction Index (gov)  hardly changes the function of the model.
+ModelWithSIGov <- tslm(TotalAsIsts ~ trend + season + GovSatIndts)
+summary(ModelWithSIGov)    
+## Adjusted R²: 0.8994
+
+## Average Temperature:
+ModelWithTemperature <- tslm(TotalAsIsts ~ trend + season + AvgTempIndts)
+summary(ModelWithTemperature)
+## Adjusted R²: 0.8993 
+
+## Births:
+ModelWithBirths <- tslm(TotalAsIsts ~ trend + season + BirthsIndts)
+summary(ModelWithBirths) 
+## Adjusted R²: 0.9088 
+
+## SIExtern:
+ModelWithSIExtern <- tslm(TotalAsIsts ~ trend + season + SatIndIndepts)
+summary(ModelWithSIExtern) 
+## Adjusted R²: 0.8998 
+
+## UrbanoExports:
+## Indicator with adjusted R² shows a better result than the reference model (ModelWithTrendAndSeasonalityOnly).
+## The individual months are also very significant.
+ModelWithTotalUrbanoExports <- tslm(TotalAsIsts ~ trend + season + TotExUrbIndts)
+summary(ModelWithTotalUrbanoExports) 
+## Adjusted R²: 0.9005 
+
+## GlobalisationPartyMembers:
+ModelWithGlobalisationPartyMembers <- tslm(TotalAsIsts ~ trend + season + GlobPartyMbrsIndts)
+summary(ModelWithGlobalisationPartyMembers) 
+## Adjusted R²: 0.8991 
+
+## AEPI:
+ModelWithAEPI <- tslm(TotalAsIsts ~ trend + season + AvgExpPriceIndts)
+summary(ModelWithAEPI) 
+## Adjusted R²: 0.8999
+
+## PPIEtel:
+ModelWithPPIEtel <- tslm(TotalAsIsts ~ trend + season + AvgExpPriceIndts)
+summary(ModelWithPPIEtel)
+## Adjusted R²: 0.9003 
+
+## NationalHolidays:
+## Indicator with the best adjusted R². The months remain very significant 
+## the indicator itself has a p-value of 0.00636
+ModelWithNationalHolidays <- tslm(TotalAsIsts ~ trend + season + EtelProdPriceIndts)
+summary(ModelWithNationalHolidays)
+## Adjusted R²: 0.9110 
+
+## ChulwalarIndex:
+ModelWithChulwalarIndex <- tslm(TotalAsIsts ~ trend + season + ChulwalarIndxts)
+summary(ModelWithChulwalarIndex) 
+## Adjusted R²: 0.9001
+
+## Inflation:
+ModelWithInflation <- tslm(TotalAsIsts ~ trend + season + InflationIndts)
+summary(ModelWithInflation)
+## Adjusted R²: 0.8989
+
+## IndependenceDayPresents:
+ModelWithIndependenceDayPresents <- tslm(TotalAsIsts ~ trend + season + ChulwalarSpendDaysIndts)
+summary(ModelWithIndependenceDayPresents)
+## Adjusted R²: 0.8993
+
+## InfluenceNationalHolidays:
+## Indicator with the best adjusted R². The months remain very significant and the indicator
+## itself has a p-value of 0,00636**
+ModelWithInfluenceNationalHolidays <- tslm(TotalAsIsts ~ trend + season + InflChulwalarDaysIndts)
+summary(ModelWithInfluenceNationalHolidays)
+## Adjusted R²: 0.9110  
+
+```
+# IX-ANALYSIS AND CONCLUSION.
+## - Correlations.
+### Linear Modelling - High Correlations between As Is and Planned:
+###  -TotalAsIs to TotalPlanned is 0.9183.
+###  -EfakAsis to Coffeeplanned is 0.905.
+###  -TotalEtelAsIs to TeaTotalPlanned is 0.915.
+###  -TotalEtelAsIs to TeaBagPlanned is 0.904.
+###  -RedEtelAsIs to TeaTotalPlanned is 0.912.
+###  -RedEtelAsIs to TeaBagPlanned is 0.910.
+## - Seasonalities and Trends.
+## Time Series Plots of Flower Sales:
+###  -TotalAsIs:  Surge and spikes follow similar pattern year over year with their being a slightly upward trend.
+###  -EfakAsIs:  Upward trend.
+###  -WugeAsIs:  Upward trend - similar seasonal pattern year over year.
+###  -BlueEtelAsIs:  Similar surge and spikes pattern but no trend evident.
+###  -RedEtelAsIs:   Similar surge and spikes pattern but no trend evident.
+###  -TotalYrlyAsIs:  Seasonality in data.
+## Time Series Plots of Planned Indicators:
+###  -TotalPlanned:  Similar surge and spike patterns, seasonality and slight upward trend.
+###  -CoffeePlanned:  Upward trend.
+###  -SpicesPlanned:  Upward trend.
+###  -TeaTotalPlanned:  Seasonality.
+###  -LooseTeaPlan:  Seasonality.
+###  -TeaBagPlan: Seasonality.
+###  -TotalYrlyPlan:  Seasonality in data.
+## - Model Selection.
+###  -Linear Modelling - including trend and seasonality.
+###  -Time series method uses historical performance to make predictions about future.
+###  -In linear regression of time series, we look for a model that simply fits a line to historical performance and extrapolates that into future.  
+###  -Does not account for seasonality or other cycles and nonlinearity, but if linearity, useful prediction might yeild.
+###  -Rsquared is how close the data are to the fitted regression line.
+###  -It is the percentage of response variable that is explained by a linear model.
+###  -Limitation of Rsquared is that it cannot determine existence of bias.
+###  -P-value: null is that coefficient is equal to zero (no effect).  
+###  -Insignificant p suggests changes in predictor are not associated with changes in response.
+###  -Significant p-values and/or R-squareds:
+###  -WugeAsIs to LooseTeaplanned has significant p-value but low R-squared.
+###  -TotalEtelAsIs to Coffeeplanned signficant p but low r-square.
+###  -RedEtelAsIs to Coffeeplanned significant p but low r-square.
+###  -Note:  No R-squared values 90% or greater
+## AIC in Linear Model Comparisons.
+###  -EfakAsIs:  EfakAsIstoCoffee is lowest AIC for "best" model.
+###  -WugeAsIs:  WugeAsIs to Spices is lowest AIC.
+###  -TotalEtelAsIs: to TotalEtelAsIstoTea is lowest AIC.
+### -BlueEtelAsIs: to LooseTea is lowest AIC.
+## - Model Fitting.
+###  -Decomposition Models - Additive Time Series.
+###  -Classical.
+####  -TotalAsIs:  Upward Trend, seasonality, pattern, not random.
+####  -Adjusted:  Seasonally, upward-addditive.
+####  -EfakAsIs:  Upward, more defined patterns of seasonality, not random.
+####  -Adjusted:  upward-multiplicative.
+####  -WugeAsIs:  Same as TotalAsIs.
+####  -TotalEtelAsIs:  Same as EfakAsIs.
+####  -BlueEtelAsIs:  Some upward trend, highly seasonal, additive.
+####  -RedEtelAsIs:  Same as BlueEtelAsIs.
+###  -STL Decomp.
+####  -TotalAsIs:  Same as Decomp.
+####  -STL Plots:
+####  -EfakAsIs - nonlinear.
+####  -WugeAsIs - near nonlinear.
+####  -TotalEtelAsIs - nonlinear.
+###  -Indicators.
+####  -Highly seasonal:  Births, average temperature.
+####  -Upward trend:  CEPI.
+####  -Similar somewhat seasonal:  Gov't and Indep Sat Index.
+####  -Total Urbano Exports Index is stair step -- stair step diagrams.
+####  -It easily identifies regular periodicity among difference equation.
+####  -models.  (p. 14 - Chao and Castrophe Theories).
+####  - discrete (sudden) jumps at specific time points imply a linear.
+####  -transition between consecutive points (retrieved July 28, 2016 from. 
+####  http://www.pmean.com/07/StairStep.html.
+####  -Similar to Total Urbano Exports Index stair step is # Global Party Members Index.
+####  -AEPI Correlations -- insignificant < 1
+####  -Independence Presents -- insignificant
+####  -Influence of National Days -- insignificant
+####  -tslm -- across all Indicators, there is significant R of ~90%.
+####  -but not significant p-values.  R-square suggest linear relationship.
+####  -among indicators although correlations with flower sales were < 1.
+####  -CEPI correlated best with total exports.  National holidays had best. ####  -adjusted R-square with significant p-value of 0.006.
+####  -As also the influence national holidays indicator.
+##IX-Recommendations.
+## Linear model for fitting time series is recommended due to overall linearity relationships.  These models include:
+###  -Correlation Analysis
+###  -Decomposition modelling
+###  -Model fitting of specific indicators with flower sales
+## For forecast, the indicators that worked well with flower sales were:
+###  -Average Temperature
+###  -CEPI
+###  -National Holidays
+###  -Births -- more analysis needed to explore this relationship.
+###  -Another area for further study is the use of ARIMA modelling.
+###  -ARIMA models can explore smoothing, and other decomposition techniques to linear relationships.
+# References.
+## -Brown, C. 1995. Chao and Castrophe Theories. Sage Publications: Thousands Oaks, CA.
+## -retrieved July 28, 2016 from http://www.pmean.com/07/StairStep.html.
+###  -End of Report.

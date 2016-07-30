@@ -1,0 +1,79 @@
+## title: "Week 10 Case Study" - continuation
+## author: "C. Banks"
+## date: "July 19, 2016"
+## output: html_document
+
+
+# II-Basic Analysis 
+## Time Series Plots.
+## Linear Relationships.
+
+## par(mfrow=c(4,2))
+
+plot(TotalAsIsts, col="black", main="TotalAsIs")
+plot(EfakAsIsts, col="red",main="EfakAsIs")
+plot(WugeAsIsts, col="blue", main="WugeAsIs")
+plot(TotalEtelAsIsts, col="green",main="TotalEtelAsIs")
+plot(BlueEtelAsIsts, col="orange", main="BlueEtelAsIs")
+plot(RedEtelAsIsts, col="purple", main="RedEtelAsIs")
+plot(TotalYrlyAsIsts, col="pink", main="TotalYrlyAsIs")
+plot(TotalPlannedts , col="black", main="TotalPlan")
+plot(CoffeePlannedts , col="red",main="CoffeePlan")
+plot(SpicesPlannedts, col="blue", main="SpicesPlan")
+plot(TeaTotalPlannedts, col="green",main="TeaTotalPlan")
+plot(LooseTeaPlannedts, col="orange", main="LooseTeaPlan")
+plot(TeaBagPlannedts, col="purple", main="TeaBagPlan")
+plot(TotalYrlyPlannedts, col="pink", main="TotalYrlyPlan")
+
+
+ 
+
+cor(TotalAsIsts, TotalPlannedts)
+
+cor(EfakAsIsts, CoffeePlannedts)
+cor(EfakAsIsts, SpicesPlannedts)
+cor(EfakAsIsts, TeaTotalPlannedts)
+cor(EfakAsIsts, LooseTeaPlannedts)
+cor(EfakAsIsts, TeaBagPlannedts)
+
+
+cor(WugeAsIsts, CoffeePlannedts)
+cor(WugeAsIsts, SpicesPlannedts)
+cor(WugeAsIsts, TeaTotalPlannedts)
+cor(WugeAsIsts, LooseTeaPlannedts)
+cor(WugeAsIsts, TeaBagPlannedts)
+
+
+cor(TotalEtelAsIsts, CoffeePlannedts)
+cor(TotalEtelAsIsts, SpicesPlannedts)
+cor(TotalEtelAsIsts, TeaTotalPlannedts)
+cor(TotalEtelAsIsts, LooseTeaPlannedts)
+cor(TotalEtelAsIsts, TeaBagPlannedts)
+
+
+cor(BlueEtelAsIsts, CoffeePlannedts)
+cor(BlueEtelAsIsts, SpicesPlannedts)
+cor(BlueEtelAsIsts, TeaTotalPlannedts)
+cor(BlueEtelAsIsts, LooseTeaPlannedts)
+cor(BlueEtelAsIsts, TeaBagPlannedts)
+
+
+
+cor(RedEtelAsIsts, CoffeePlannedts)
+cor(RedEtelAsIsts, SpicesPlannedts)
+cor(RedEtelAsIsts, TeaTotalPlannedts)
+cor(RedEtelAsIsts, LooseTeaPlannedts)
+cor(RedEtelAsIsts, TeaBagPlannedts)
+
+
+cor(TotalYrlyAsIsts, CoffeePlannedts)
+cor(TotalYrlyAsIsts, SpicesPlannedts)
+cor(TotalYrlyAsIsts, TeaTotalPlannedts)
+cor(TotalYrlyAsIsts, LooseTeaPlannedts)
+cor(TotalYrlyAsIsts, TeaBagPlannedts)
+
+ 
+## Some of the correlations are strong and
+## some are weak....[state which]  
+##
+##

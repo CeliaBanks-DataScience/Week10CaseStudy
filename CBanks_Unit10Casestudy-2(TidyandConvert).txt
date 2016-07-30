@@ -1,0 +1,96 @@
+## title: "Week 10 Case Study" - continued
+## author: "C. Banks"
+## date: "July 19, 2016"
+## output: html_document
+
+
+############################################################
+## DATA FILE ANALYSIS
+##
+## Some overall comments on the data files:
+## In all 3 of the imported files, there are 
+## NA's in row breaks and where data is missing for year
+## There are multiple breaks or segments of data
+## that can be made into separate datasets
+## segmented by Totals, Efak, Wuge, Etel, blue Etel
+## red Etel and Total Yearly.  For the Indicators file,
+## there are ~14 categories of indicators.  Subset the files 
+## and transform the data to time series.
+############################################################
+
+############################################################
+## DATA TIDYING STAGE
+## 
+## Segment and transform to vectors
+## and eliminate NAs
+############################################################
+
+## Segment AsIs Datasets
+TotalAsIs <- c(DataAsIs [1:12,2],DataAsIs [1:12,3],DataAsIs [1:12,4],DataAsIs [1:12,5],DataAsIs [1:12,6],DataAsIs [1:12,7])
+TotalAsIs2014 <- c(DataAsIs [1:12,8])
+EfakAsIs <- c(DataAsIs [15:26,2],DataAsIs [15:26,3],DataAsIs [15:26,4],DataAsIs [15:26,5],DataAsIs [15:26,6],DataAsIs [15:26,7])
+WugeAsIs <- c(DataAsIs [29:40,2],DataAsIs [29:40,3],DataAsIs [29:40,4],DataAsIs [29:40,5],DataAsIs [29:40,6],DataAsIs [29:40,7])
+TotalEtelAsIs <- c(DataAsIs [43:54,2],DataAsIs [43:54,3],DataAsIs [43:54,4],DataAsIs [43:54,5],DataAsIs [43:54,6],DataAsIs [43:54,7])
+BlueEtelAsIs <- c(DataAsIs [57:68,2],DataAsIs [57:68,3],DataAsIs [57:68,4],DataAsIs [57:68,5],DataAsIs [57:68,6],DataAsIs [57:68,7])
+RedEtelAsIs <- c(DataAsIs [71:82,2],DataAsIs [71:82,3],DataAsIs [71:82,4],DataAsIs [71:82,5],DataAsIs [71:82,6],DataAsIs [71:82,7])
+TotalYrlyAsIs <- c(DataAsIs [85,2],DataAsIs [85,3],DataAsIs [85,4],DataAsIs [85,5],DataAsIs [85,6],DataAsIs [85,7])
+
+## Segment Planned Datasets  # check this dataset before proceeding with segmenting
+TotalPlanned <- c(DataPlanned [1:12,2],DataPlanned [1:12,3],DataPlanned [1:12,4],DataPlanned [1:12,5],DataPlanned [1:12,6],DataPlanned [1:12,7])
+TotalPlanned2014 <- c(DataPlanned [1:12,8])
+CoffeePlanned <- c(DataPlanned [15:26,2],DataPlanned [15:26,3],DataPlanned [15:26,4],DataPlanned [15:26,5],DataPlanned [15:26,6],DataPlanned [15:26,7])
+SpicesPlanned <- c(DataPlanned [29:40,2],DataPlanned [29:40,3],DataPlanned [29:40,4],DataPlanned [29:40,5],DataPlanned [29:40,6],DataPlanned [29:40,7])
+TeaTotalPlanned <- c(DataPlanned [43:54,2],DataPlanned [43:54,3],DataPlanned [43:54,4],DataPlanned [43:54,5],DataPlanned [43:54,6],DataPlanned [43:54,7])
+LooseTeaPlanned <- c(DataPlanned [57:68,2],DataPlanned [57:68,3],DataPlanned [57:68,4],DataPlanned [57:68,5],DataPlanned [57:68,6],DataPlanned [57:68,7])
+TeaBagPlanned <- c(DataPlanned [71:82,2],DataPlanned [71:82,3],DataPlanned [71:82,4],DataPlanned [71:82,5],DataPlanned [71:82,6],DataPlanned [71:82,7])
+TotalYrlyPlanned <- c(DataPlanned [85,2],DataPlanned [85,3],DataPlanned [85,4],DataPlanned [85,5],DataPlanned [85,6],DataPlanned [85,7])
+
+
+## Segment Indicator Datasets  # check these are right indicators .... yes they are
+ExpPriceChgInd <- c(DataIndicators [1:12,2],DataIndicators [1:12,3],DataIndicators [1:12,4],DataIndicators [1:12,5],DataIndicators [1:12,6],DataIndicators [1:12,7])
+GovSatInd <- c(DataIndicators [15:26,2],DataIndicators [15:26,3],DataIndicators [15:26,4],DataIndicators [15:26,5],DataIndicators [15:26,6],DataIndicators [15:26,7])
+AvgTempInd <- c(DataIndicators [29:40,2],DataIndicators [29:40,3],DataIndicators [29:40,4],DataIndicators [29:40,5],DataIndicators [29:40,6],DataIndicators [29:40,7])
+BirthsInd <- c(DataIndicators [43:54,2],DataIndicators [43:54,3],DataIndicators [43:54,4],DataIndicators [43:54,5],DataIndicators [43:54,6],DataIndicators [43:54,7])
+SatIndIndep <-c(DataIndicators [57:68,2],DataIndicators [57:68,3],DataIndicators [57:68,4],DataIndicators [57:68,5],DataIndicators [57:68,6],DataIndicators [57:68,7])
+TotExUrbInd <-c(DataIndicators [71:82,2],DataIndicators [71:82,3],DataIndicators [71:82,4],DataIndicators [71:82,5],DataIndicators [71:82,6],DataIndicators [71:82,7])
+TotExUrbInd2014 <-c(DataIndicators [71:82,8])
+GlobPartyMbrsInd <- c(DataIndicators [85:96,2],DataIndicators [85:96,3],DataIndicators [85:96,4],DataIndicators [85:96,5],DataIndicators [85:96,6],DataIndicators [85:96,7])
+GlobPartyMbrsInd2014 <-c(DataIndicators [85:96,8])
+AvgExpPriceInd <- c(DataIndicators [99:110,2],DataIndicators [99:110,3],DataIndicators [99:110,4],DataIndicators [99:110,5],DataIndicators [99:110,6],DataIndicators [99:110,7])
+EtelProdPriceInd <- c(DataIndicators [113:124,2],DataIndicators [113:124,3],DataIndicators [113:124,4],DataIndicators [113:124,5],DataIndicators [113:124,6],DataIndicators [113:124,7])
+ChulwalarIndx <- c(DataIndicators [127:138,2],DataIndicators [127:138,3],DataIndicators [127:138,4],DataIndicators [127:138,5],DataIndicators [127:138,6],DataIndicators [127:138,7])
+ChulwalarIndx2014 <-c(DataIndicators [127:138,8])
+InflationInd <- c(DataIndicators [141:152,2],DataIndicators [141:152,3],DataIndicators [141:152,4],DataIndicators [141:152,5],DataIndicators [141:152,6],DataIndicators [141:152,7])
+InflationInd2014 <-c(DataIndicators [141:152,8])
+ChulwalarSpendDaysInd <- c(DataIndicators [155:166,2],DataIndicators [155:166,3],DataIndicators [155:166,4],DataIndicators [155:166,5],DataIndicators [155:166,6],DataIndicators [155:166,7])
+ChulwalarSpendDaysInd2014 <-c(DataIndicators [155:166,8])
+ChulwalarDaysInd <- c(DataIndicators [169:180,2],DataIndicators [169:180,3],DataIndicators [169:180,4],DataIndicators [169:180,5],DataIndicators [169:180,6],DataIndicators [166:180,7])
+ChulwalarDaysInd2014 <-c(DataIndicators [169:180,8])
+InflChulwalarDaysInd <- c(DataIndicators [183:194,2],DataIndicators [183:194,3],DataIndicators [183:194,4],DataIndicators [183:194,5],DataIndicators [183:194,6],DataIndicators [183:194,7])
+InflChulwalarDaysInd2014 <-c(DataIndicators [183:194,8])
+
+
+############################################################
+## Convert vectorized data into time series
+############################################################
+
+##AsIs Time Series
+TotalAsIsts<- ts(TotalAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+TotalAsIsts2014 <- ts(TotalAsIs2014, start=c(2014,1), end=c(2014,12), frequency=12)
+EfakAsIsts<- ts(EfakAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+WugeAsIsts<- ts(WugeAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+TotalEtelAsIsts<- ts(TotalEtelAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+BlueEtelAsIsts<- ts(BlueEtelAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+RedEtelAsIsts<- ts(RedEtelAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+TotalYrlyAsIsts<- ts(TotalYrlyAsIs , start=c(2008,1), end=c(2013,12), frequency=12)
+
+##Planned Time Series
+TotalPlannedts <- ts(TotalPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TotalPlanned2014ts <- ts(TotalPlanned2014, start=c(2014,1), end=c(2014,12), frequency=12)
+CoffeePlannedts <- ts(CoffeePlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+SpicesPlannedts <- ts(SpicesPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TeaTotalPlannedts <- ts(TeaTotalPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+LooseTeaPlannedts <- ts(LooseTeaPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TeaBagPlannedts <- ts(TeaBagPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+TotalYrlyPlannedts <- ts(TotalYrlyPlanned, start=c(2008,1), end=c(2013,12), frequency=12)
+

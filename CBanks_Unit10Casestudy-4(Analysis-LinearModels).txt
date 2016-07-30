@@ -1,0 +1,250 @@
+## title: "Week 10 Case Study" - continuation
+## author: "C. Banks"
+## date: "July 19, 2016"
+## output: html_document
+
+
+## IV-Linear Modelling including trend and seasonality.
+##
+## LM
+TotalAsIs_lm <- lm(TotalAsIsts ~ TotalPlannedts , data = TotalAsIsts)
+summary(TotalAsIs_lm)
+## TSLM
+TotalAsIsfit <- tslm(TotalAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(TotalAsIsfit, h=72))
+##
+## LM
+EfakAsIstoCoffee_lm <- lm(EfakAsIsts ~ CoffeePlannedts , data = EfakAsIsts)
+summary(EfakAsIstoCoffee_lm)
+## TSLM
+EfakAsIsfit <- tslm(EfakAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(EfakAsIsfit, h=72))
+
+## LM
+EfakAsIstoSpices_lm <- lm(EfakAsIsts ~ SpicesPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoSpices_lm)
+## TSLM
+EfakAsIstoSpicesfit <- tslm(EfakAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(EfakAsIstoSpicesfit, h=72))
+
+## LM
+EfakAsIstoTeaTotal_lm <- lm(EfakAsIsts ~ TeaTotalPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoTeaTotal_lm)
+## TSLM
+EfakAsIstoTeaTotalfit <- tslm(EfakAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(EfakAsIstoTeaTotalfit, h=72))
+
+## LM
+EfakAsIstoLooseTea_lm <- lm(EfakAsIsts ~ LooseTeaPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoLooseTea_lm)
+## TSLM
+EfakAsIstoLooseTeafit <- tslm(EfakAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(EfakAsIstoLooseTeafit, h=72))
+
+## LM
+EfakAsIstoTeaBag_lm <- lm(EfakAsIsts ~ TeaBagPlannedts , data = EfakAsIsts)
+summary(EfakAsIstoTeaBag_lm)
+## TSLM
+EfakAsIstoTeaBagfit <- tslm(EfakAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(EfakAsIstoTeaBagfit, h=72))
+
+##
+## LM of WugeAsIs to Planned Series
+## 
+## LM
+WugeAsIstoCoffee_lm <- lm(WugeAsIsts ~ CoffeePlannedts , data = WugeAsIsts)
+summary(WugeAsIstoCoffee_lm)
+## TSLM
+WugeAsIstoCoffeefit <- tslm(WugeAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(WugeAsIstoCoffeefit, h=72))
+
+## LM
+WugeAsIstoSpices_lm <- lm(WugeAsIsts ~ SpicesPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoSpices_lm)
+## TSLM
+WugeAsIstoSpicesfit <- tslm(WugeAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(WugeAsIstoSpicesfit, h=72))
+
+## LM 
+WugeAsIstoTeaTotal_lm <- lm(WugeAsIsts ~ TeaTotalPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoTeaTotal_lm)
+##
+## TSLM
+WugeAsIstoTeaTotalfit <- tslm(WugeAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(WugeAsIstoTeaTotalfit, h=72))
+
+## LM
+WugeAsIstoLooseTea_lm <- lm(WugeAsIsts ~ LooseTeaPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoLooseTea_lm)
+## TSLM
+WugeAsIstoLooseTeafit <- tslm(WugeAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(WugeAsIstoLooseTeafit, h=72))
+
+## LM
+WugeAsIstoTeaBag_lm <- lm(WugeAsIsts ~ TeaBagPlannedts , data = WugeAsIsts)
+summary(WugeAsIstoTeaBag_lm)
+## TSLM
+WugeAsIstoTeaBagfit <- tslm(WugeAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(WugeAsIstoTeaBagfit, h=72))
+##
+##
+## LM
+TotalEtelAsIs_lm <- lm(TotalEtelAsIsts ~ TotalPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIs_lm)
+## TSLM
+TotalEtelAsIsfit <- tslm(TotalEtelAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(TotalEtelAsIsfit, h=72))
+
+##LM
+TotalEtelAsIstoCoffee_lm <- lm(TotalEtelAsIsts ~ CoffeePlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoCoffee_lm)
+## TSLM
+TotalEtelAsIstoCoffeefit <- tslm(TotalEtelAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoCoffeefit, h=72))
+
+## LM
+TotalEtelAsIsSpices_lm <- lm(TotalEtelAsIsts ~ SpicesPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIsSpices_lm)
+## TSLM
+TotalEtelAsIstoSpicesfit <- tslm(TotalEtelAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoSpicesfit, h=72))
+
+## LM
+TotalEtelAsIstoTeaTotal_lm <- lm(TotalEtelAsIsts ~ TeaTotalPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoTeaTotal_lm)
+## TSLM
+TotalEtelAsIstoTeaTotalfit <- tslm(TotalEtelAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoTeaTotalfit, h=72))
+
+## LM
+TotalEtelAsIstoLooseTea_lm <- lm(TotalEtelAsIsts ~ LooseTeaPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoLooseTea_lm)
+## TSLM
+TotalEtelAsIstoLooseTeafit <- tslm(TotalEtelAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoLooseTeafit, h=72))
+
+## LM
+TotalEtelAsIstoTeaBag_lm <- lm(TotalEtelAsIsts ~ TeaBagPlannedts , data = TotalEtelAsIsts)
+summary(TotalEtelAsIstoTeaBag_lm)
+## TSLM
+TotalEtelAsIstoTeaBagfit <- tslm(TotalEtelAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoTeaBagfit, h=72))
+
+##
+##
+## LM
+BlueEtelAsIs_lm <- lm(BlueEtelAsIsts ~ TotalPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIs_lm)
+## TSLM
+BlueEtelAsIsfit <- tslm(BlueEtelAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(BlueEtelAsIsfit, h=72))
+
+##LM
+BlueEtelAsIstoCoffee_lm <- lm(BlueEtelAsIsts ~ CoffeePlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoCoffee_lm)
+## TSLM
+BlueEtelAsIstoCoffeefit <- tslm(BlueEtelAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoCoffeefit, h=72))
+
+## LM
+BlueEtelAsIstoSpices_lm <- lm(BlueEtelAsIsts ~ SpicesPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoSpices_lm)
+## TSLM
+BlueEtelAsIstoSpicesfit <- tslm(BlueEtelAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoSpicesfit, h=72))
+
+## LM
+BlueEtelAsIstoTeaTotal_lm <- lm(BlueEtelAsIsts ~ TeaTotalPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoTeaTotal_lm)
+## TSLM
+TotalEtelAsIstoTeaTotalfit <- tslm(BlueEtelAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(TotalEtelAsIstoTeaTotalfit, h=72))
+
+## LM
+BlueEtelAsIstoLooseTea_lm <- lm(BlueEtelAsIsts ~ LooseTeaPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoLooseTea_lm)
+## TSLM
+BlueEtelAsIstoLooseTeafit <- tslm(BlueEtelAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoLooseTeafit, h=72))
+
+## LM
+BlueEtelAsIstoTeaBag_lm <- lm(BlueEtelAsIsts ~ TeaBagPlannedts , data = BlueEtelAsIsts)
+summary(BlueEtelAsIstoTeaBag_lm)
+## TSLM
+BlueEtelAsIstoTeaBagfit <- tslm(BlueEtelAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(BlueEtelAsIstoTeaBagfit, h=72))
+
+##
+##
+## LM
+RedEtelAsIstoTotal_lm <- lm(RedEtelAsIsts ~ TotalPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoTotal_lm)
+## TSLM
+RedEtelAsIsfit <- tslm(RedEtelAsIsts ~ TotalPlannedts + trend + season )
+plot(forecast(RedEtelAsIsfit, h=72))
+
+##LM
+RedEtelAsIstoCoffee_lm <- lm(RedEtelAsIsts ~ CoffeePlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoCoffee_lm)
+## TSLM
+RedEtelAsIstoCoffeefit <- tslm(RedEtelAsIsts ~ CoffeePlannedts + trend + season )
+plot(forecast(RedEtelAsIstoCoffeefit, h=72))
+
+## LM
+RedEtelAsIstoSpices_lm <- lm(RedEtelAsIsts ~ SpicesPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoSpices_lm)
+## TSLM
+RedEtelAsIstoSpicesfit <- tslm(RedEtelAsIsts ~ SpicesPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoSpicesfit, h=72))
+
+## LM
+RedEtelAsIstoTeaTotal_lm <- lm(RedEtelAsIsts ~ TeaTotalPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoTeaTotal_lm)
+## TSLM
+RedEtelAsIstoTeaTotalfit <- tslm(RedEtelAsIsts ~ TeaTotalPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoTeaTotalfit, h=72))
+
+## LM
+RedEtelAsIstoLooseTea_lm <- lm(RedEtelAsIsts ~ LooseTeaPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoLooseTea_lm)
+## TSLM
+RedEtelAsIstoLooseTeafit <- tslm(RedEtelAsIsts ~ LooseTeaPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoLooseTeafit, h=72))
+
+## LM
+RedEtelAsIstoTeaBag_lm <- lm(RedEtelAsIsts ~ TeaBagPlannedts , data = RedEtelAsIsts)
+summary(RedEtelAsIstoTeaBag_lm)
+## TSLM
+RedEtelAsIstoTeaBagfit <- tslm(RedEtelAsIsts ~ TeaBagPlannedts + trend + season )
+plot(forecast(RedEtelAsIstoTeaBagfit, h=72))
+
+##
+##
+## LM
+TotalYrlyAsIs_lm <- lm(TotalYrlyAsIsts ~ TotalYrlyPlannedts , data = TotalYrlyAsIsts)
+summary(TotalYrlyAsIs_lm)
+## TSLM
+TotalYrlyAsIsfit <- tslm(TotalYrlyAsIsts ~ TotalYrlyPlannedts + trend + season )
+plot(forecast(TotalYrlyAsIsfit, h=72))
+##
+## V-AIC All Linear Model Comparisons.
+##
+##
+## 
+## AIC All EfakAsIs to Planned Linear Models
+AIC(EfakAsIstoCoffee_lm, EfakAsIstoSpices_lm, EfakAsIstoTeaTotal_lm, EfakAsIstoLooseTea_lm, EfakAsIstoTeaBag_lm)
+##
+## AIC All WugeAsIs to Planned Linear Models
+AIC(WugeAsIstoCoffee_lm, WugeAsIstoSpices_lm, WugeAsIstoTeaTotal_lm, WugeAsIstoLooseTea_lm, WugeAsIstoTeaBag_lm)
+##
+## AIC All TotalEtelAsIs to Planned Linear Models
+AIC(TotalEtelAsIs_lm, TotalEtelAsIstoCoffee_lm, TotalEtelAsIsSpices_lm, TotalEtelAsIstoTeaTotal_lm, TotalEtelAsIstoLooseTea_lm, TotalEtelAsIstoTeaBag_lm)
+##
+## AIC All BlueEtelAsIs to Planned Linear Models
+AIC (BlueEtelAsIstoCoffee_lm, BlueEtelAsIstoSpices_lm, BlueEtelAsIstoTeaTotal_lm, BlueEtelAsIstoLooseTea_lm, BlueEtelAsIstoTeaBag_lm)
+##
+## AIC All RedEtelAsIs to Planned Linear Models
+AIC (RedEtelAsIstoTotal_lm, RedEtelAsIstoCoffee_lm, RedEtelAsIstoSpices_lm, RedEtelAsIstoTeaTotal_lm, RedEtelAsIstoLooseTea_lm, RedEtelAsIstoTeaBag_lm)
+##
+##
+##

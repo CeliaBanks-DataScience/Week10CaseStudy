@@ -1,0 +1,78 @@
+## title: "Week 10 Case Study"
+## author: "C. Banks"
+## date: "July 19, 2016"
+## output: html_document
+
+## INTRODUCTION
+## This assignment presents an analysis of the Chulwalr nation flower sales with seasonal data provided for interpretation of forecast vs actual.  
+## The purpose of this project will be to 1) determine relationships in flower sales with specific indicators and 2) identify a model for 
+## forecasting production of the flowers.
+ 
+
+############################################################
+## PREPARATION STAGE
+## 
+## -Set working directory
+## -Load libraries
+## -Import data into r
+## Import data into R -- 3 .csv files are
+## provided. 
+## Files downloaded from SMU/MSDS6360/10.2
+############################################################
+ 
+## Preparation Stage: 
+## R version 3.1.1 on Win64x
+## Load the libraries
+library(repmis)
+library(downloader)
+library(data.table)
+library(timeSeries)
+library(zoo)
+library(tseries)
+library(xts)
+library(fpp)
+library(tcltk)
+library(plyr)
+library(dplyr) 
+library(ggplot2)
+library(reshape2)
+library(latticeExtra)
+library(googleVis)
+library(quantmod)
+library(PerformanceAnalytics)
+
+cat("Libraries loaded and files will be read into R")
+
+############################################################
+## READ DATA FILES STAGE
+## 
+## Import data into R -- 3 .csv files are
+## provided. 
+## Files downloaded from SMU/MSDS6360/10.2
+############################################################
+
+DataAsIs <- read.csv("ImportedAsIsDataChulwalar.csv")
+DataPlanned <- read.csv("ImportedPlanDataChulwalar.csv")
+DataIndicators <- read.csv("ImportedIndicatorsChulwalar.csv")
+
+
+
+## Look at Data
+head(DataAsIs)
+head(DataPlanned)  # need to check this csv -- it is for tea, coffee and spices, not flowers -- maybe wrong data set[?]
+head(DataIndicators)
+
+## There are semicolons separating data, redo read
+DataAsIs <- read.csv("ImportedAsIsDataChulwalar.csv",sep=";",fill=T)
+DataPlanned <- read.csv("ImportedPlanDataChulwalar.csv",sep=";",fill=T)
+DataIndicators <- read.csv("ImportedIndicatorsChulwalar.csv",sep=";",fill=T)
+
+## Recheck Data
+head(DataAsIs) 
+head(DataPlanned)
+
+## Structure of data file 
+str(DataAsIs)   
+str(DataPlanned)
+str(DataIndicators)
+

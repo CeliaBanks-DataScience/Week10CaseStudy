@@ -1,0 +1,116 @@
+## title: "Week 10 Case Study" - continuation
+## author: "C. Banks"
+## date: "July 19, 2016"
+## output: html_document
+
+
+#  VI-Time Series Modelling using Decomposition.
+## Classical. 
+## STL.
+## Plot fitted, compute/plot seasonally adjusted data.
+## 
+## Decomposed
+fitdTotalAsIsts <- decompose(TotalAsIsts)
+plot(fitdTotalAsIsts)
+## Seasonally Adjusted
+TotalAsIstsadj <- seasadj(fitdTotalAsIsts)
+plot(TotalAsIstsadj)
+##
+## Decomposed
+fitdEfakAsIsts <- decompose(EfakAsIsts)
+plot(fitdEfakAsIsts)
+## Seasonally Adjusted
+EfakAsIstsadj <- seasadj(fitdEfakAsIsts)
+plot(EfakAsIstsadj)
+##
+## Decomposed
+fitdWugeAsIsts <- decompose(WugeAsIsts)
+plot(fitdWugeAsIsts)
+##
+## Seasonally Adjusted
+WugeAsIstsadj <- seasadj(fitdWugeAsIsts)
+plot(WugeAsIstsadj)
+
+##
+## Decomposed
+fitdTotalEtelAsIsts <- decompose(TotalEtelAsIsts)
+plot(fitdTotalEtelAsIsts)
+## Seasonally Adjusted
+TotalEtelAsIstsadj <- seasadj(fitdTotalEtelAsIsts)
+plot(TotalEtelAsIstsadj)
+
+##
+## Decomposed
+fitdBlueEtelAsIsts <- decompose(BlueEtelAsIsts)
+plot(fitdBlueEtelAsIsts)
+## Seasonally Adjusted
+BlueEtelAsIstsadj <- seasadj(fitdBlueEtelAsIsts)
+plot(BlueEtelAsIstsadj)
+##
+## Decomposed
+fitdRedEtelAsIsts <- decompose(RedEtelAsIsts)
+plot(fitdRedEtelAsIsts)
+## Seasonally Adjusted
+RedEtelAsIstsadj <- seasadj(fitdRedEtelAsIsts)
+plot(RedEtelAsIstsadj)
+##
+##
+## State the anlyasis of classical decomposition and seasonal adjustment....
+##
+##
+## Seasonal and Trend Decomposition using the Loess Method (STL)
+## STL is useful where nonlinearity exists...
+##
+TotalAsIs_stl <- stl(TotalAsIsts, s.window=5)
+EfakAsIs_stl <- stl(EfakAsIsts, s.window=5)
+WugeAsIs_stl <- stl(WugeAsIsts, s.window=5)
+TotalEtelAsIs_stl <- stl(TotalEtelAsIsts, s.window=5)
+BlueEtelAsIs_stl <- stl(BlueEtelAsIsts, s.window=5)
+RedEtelAsIs_stl <- stl(RedEtelAsIsts, s.window=5)
+##
+# Thus the individual time series can be shown graphically and tabularly.
+
+# The trend of the total exports is almost linear. A relatively uniform 
+# seaonality can be seen.
+# It is interesting to note that the almost linear trend is not seen in the 
+# individual segments. The individual trends run partially in opposite 
+# directions in the middle of the time scale, which causes the linear trend 
+# in the total As Is data.
+
+## par(mfrow=c(3,2))
+
+plot(TotalAsIs_stl, col="black", main="TotalAsIs_stl")
+TotalAsIs_stl
+
+plot(EfakAsIs_stl, col="black", main="EfakAsIs_stl")
+EfakAsIs_stl
+
+plot(WugeAsIs_stl, col="black", main="WugeAsIs_stl")
+WugeAsIs_stl
+
+plot(TotalEtelAsIs_stl, col="black", main="TotalEtelAsIs_stl")
+TotalEtelAsIs_stl
+
+plot(BlueEtelAsIs_stl, col="black", main="BlueEtelAsIs_stl")
+BlueEtelAsIs_stl
+
+plot(RedEtelAsIs_stl, col="black", main="RedEtelAsIs_stl")
+RedEtelAsIs_stl
+
+ 
+
+## par(mfrow=c(3,2))
+
+plot(TotalAsIs_stl$time.series[,"trend"], col="black")
+plot(EfakAsIs_stl$time.series[,"trend"], col="red")
+plot(WugeAsIs_stl$time.series[,"trend"], col="blue")
+plot(TotalEtelAsIs_stl$time.series[,"trend"], col="green")
+plot(BlueEtelAsIs_stl$time.series[,"trend"], col="orange")
+plot(RedEtelAsIs_stl$time.series[,"trend"], col="purple")
+
+ 
+
+##
+##  [Give analysis of STL decomposition]
+##
+##
